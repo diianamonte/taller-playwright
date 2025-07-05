@@ -1,44 +1,73 @@
 import { test, expect } from '@playwright/test';
+import { RegisterPage } from '../Pages/Registerpage'; 
+import testData from '../data/testData.json';
+import { DashboardPage } from '../Pages/dashboardPage';
+import { LoginPage } from '../Pages/loginPage';
+
+let registerPage: RegisterPage;
+let loginPage: LoginPage;
+let dashboardPage: DashboardPage;
+
+
+test.beforeEach (async ({page}) => {
+  registerPage = new RegisterPage(page);
+  loginPage = new LoginPage(page);
+  dashboardPage = new DashboardPage(page);
+  await registerPage.visitarPaginaRegistro();
+
+})
 
 test('TC-01 Verification the elements UI in the login page', async ({ page }) => {
-  await page.goto('http://localhost:3000/');
-  await expect(page.locator('input[name="firstName"]')).toBeVisible();
-  await expect(page.locator('input[name="lastName"]')).toBeVisible();
-  await expect(page.locator('input[name="password"]')).toBeVisible();
-  await expect(page.getByTestId('boton-registrarse')).toBeVisible();
-});
+  await expect(registerPage.firstNameInput).toBeVisible();
+  await expect(registerPage.lastNameInput).toBeVisible();
+  await expect(registerPage.emailInput).toBeVisible();
+  await expect(registerPage.registerButton).toBeVisible();
+})
 
 test('TC-02 Verification button register is disabled', async ({ page }) => {
- await page.goto('http://localhost:3000/');
- await expect(page.getByTestId('boton-registrarse')).toBeDisabled();
+ await expect(registerPage.registerButton).toBeDisabled();
 
 });
 
 test('TC-03 Verification fill inputs and disabled register button', async ({ page }) => {
-  await page.goto('http://localhost:3000/');
-  await page.locator('input[name="firstName"]').fill('Juan');
-  await page.locator('input[name="lastName"]').fill('Montero');
-  await page.locator('input[name="email"]').fill('email@gmail.com');
-  await page.locator('input[name="password"]').fill('Password123');
-  await expect(page.getByTestId('boton-registrarse')).toBeEnabled();
+  await registerPage.completarFormularioRegistro(testData.usuarioValido)
+  await expect(registerPage.registerButton).toBeEnabled();
 });
 
 test('TC-04 Verification button login', async ({ page }) => {
-await page.goto('http://localhost:3000/');
-await page.getByTestId('boton-login-header-signup').click();
-await expect(page).toHaveURL('http://localhost:3000/login')
-await page.waitForTimeout(5000);
+
+await registerPage.loginButton.click();
+ await expect(page).toHaveURL('http://localhost:3000/login'); 
 });
 
-test('TC-05 Verification register succes', async ({ page }) => {
-  const email = 'diana'+Date.now().toString()+'@gamalgama.com'
-  
-  await page.goto('http://localhost:3000/');
-  await page.locator('input[name="firstName"]').fill('Juan');
-  await page.locator('input[name="lastName"]').fill('Montero');
-  await page.locator('input[name="email"]').fill(email);
-  await page.locator('input[name="password"]').fill('Password123');
-  await page.getByTestId('boton-registrarse').click();
-  await expect(page.getByText('Registro exitoso')).toBeVisible();
-}); 
+test('TC-5 Verificar Registro exitoso con datos válidos', async ({ page }) => {
 
+  await test.step('Completar el formulario de registro con datos válidos', async () => {
+    
+    const email = (testData.usuarioValido.email.split('@')[0]) + Date.now().toString() + '@' + testData.usuarioValido.email.split('@')[1];
+   
+    testData.usuarioValido.email = email;
+
+    await registerPage.completarYHacerClickBotonRegistro(testData.usuarioValido);
+  });
+  await expect(page.getByText('Registro exitoso')).toBeVisible();
+});
+
+test('TC-6 Verificar que un usuario no pueda registrarse con un correo electronico existente ', async ({ page }) => {
+
+  await test.step('Completar el formulario de registro con datos válidos', async () => {
+    
+    const email = (testData.usuarioValido.email.split('@')[0]) + Date.now().toString() + '@' + testData.usuarioValido.email.split('@')[1];
+   
+    testData.usuarioValido.email = email;
+
+    await registerPage.completarYHacerClickBotonRegistro(testData.usuarioValido);
+  });
+  await expect(page.getByText('Registro exitoso')).toBeVisible();
+});
+
+test('TC-7 Verificar inicio de sesión exitoso con credenciales válidas', async ({ page }) => {
+  await loginPage.completarYHacerClickBotonLogin(testData.usuarioValido);
+  await expect(page.getByText('Inicio de sesión exitoso')).toBeVisible();
+  await expect(dashboardPage.dashboardTitle).toBeVisible();
+});
