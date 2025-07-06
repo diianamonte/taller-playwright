@@ -1,0 +1,10 @@
+{
+    "usuarioValido": {
+        "nombre": "Juan",
+        "apellido": "Torres",
+        "email": "diianamonte@gmail.com",
+        "contraseña": "password123"
+    }
+
+
+}
