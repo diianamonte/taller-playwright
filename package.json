@@ -2,13 +2,31 @@
   "name": "talleratenea",
   "version": "1.0.0",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "test": "npx playwright test",
+    "test:headed": "npx playwright test --headed",
+    "test:debug": "npx playwright test --debug",
+    "test:ui": "npx playwright test --ui",
+    "test:report": "npx playwright show-report",
+    "test:codegen": "npx playwright codegen"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
   "devDependencies": {
-    "@playwright/test": "^1.52.0",
+    "@playwright/test": "^1.53.2",
     "@types/node": "^22.15.29"
-  }
+  },
+  "directories": {
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/diianamonte/taller-playwright.git"
+  },
+  "bugs": {
+    "url": "https://github.com/diianamonte/taller-playwright/issues"
+  },
+  "homepage": "https://github.com/diianamonte/taller-playwright#readme",
+  "description": ""
 }
